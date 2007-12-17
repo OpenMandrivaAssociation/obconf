@@ -10,7 +10,6 @@ Source0: 	%{name}-%{version}.tar.bz2
 License: 	GPL
 Group:   	Graphical desktop/Other
 Url:     	http://tr.openmonkey.com/pages/obconf
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires: 	openbox
 BuildRequires: 	startup-notification-devel, openbox-devel, gtk+2-devel, libglade2.0-devel 
 
