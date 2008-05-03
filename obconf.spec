@@ -1,12 +1,12 @@
 %define name 	obconf
-%define version 1.6
-%define release 1
+%define version 2.0.3
+%define rel 1
 
 Summary:	Openbox preferences manager
 Name:    	%{name}
 Version: 	%{version}
-Release: 	%mkrel %{release}
-Source0: 	%{name}-%{version}.tar.bz2
+Release: 	%mkrel %{rel}
+Source0: 	http://icculus.org/openbox/obconf/%name-%version.tar.gz
 License: 	GPL
 Group:   	Graphical desktop/Other
 Url:     	http://tr.openmonkey.com/pages/obconf
@@ -21,7 +21,7 @@ ObConf is a graphical configuration tool for the Openbox window manager.
 %setup -q
 
 %build
-%configure
+%configure2_5x
 %make
 
 %install
