@@ -1,6 +1,6 @@
 %define name 	obconf
 %define version 2.0.3
-%define rel 1
+%define rel 2
 
 Summary:	Openbox preferences manager
 Name:    	%{name}
