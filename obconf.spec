@@ -1,13 +1,13 @@
 %define name 	obconf
 %define version 2.0.3
-%define rel 2
+%define rel 3
 
 Summary:	Openbox preferences manager
 Name:    	%{name}
 Version: 	%{version}
 Release: 	%mkrel %{rel}
 Source0: 	http://icculus.org/openbox/obconf/%name-%version.tar.gz
-License: 	GPL
+License: 	GPLv2+
 Group:   	Graphical desktop/Other
 Url:     	http://tr.openmonkey.com/pages/obconf
 BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
