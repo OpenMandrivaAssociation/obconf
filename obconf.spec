@@ -1,19 +1,15 @@
-%define name 	obconf
-%define version 2.0.3
-%define rel 5
-
 Summary:	Openbox preferences manager
-Name:    	%{name}
-Version: 	%{version}
-Release: 	%mkrel %{rel}
-Source0: 	http://icculus.org/openbox/obconf/%name-%version.tar.gz
-License: 	GPLv2+
-Group:   	Graphical desktop/Other
-Url:     	http://icculus.org/openbox/index.php/Obconf
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Requires: 	openbox
+Name:		obconf
+Version:	2.0.3
+Release:	%mkrel 6
+Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
+License:	GPLv2+
+Group:		Graphical desktop/Other
+Url:		http://openbox.org/wiki/Obconf
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires:	startup-notification-devel, openbox-devel, gtk+2-devel, libglade2.0-devel 
 BuildRequires:	desktop-file-utils
+Requires:	openbox
 
 %description
 ObConf is a graphical configuration tool for the Openbox window manager.
@@ -29,15 +25,21 @@ ObConf is a graphical configuration tool for the Openbox window manager.
 rm -rf %{buildroot}
 %makeinstall
 
-#fid .desktop file
+# fix .desktop file
 desktop-file-install --remove-key="Encoding" \
 		--dir %{buildroot}%{_datadir}/applications %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+%find_lang %{name}
 
 %clean
 rm -rf %{buildroot}
 
-%files
+%files -f %{name}.lang
 %defattr(-,root,root)
 %doc AUTHORS README COPYING TODO
-%_bindir/*
-%_datadir/*/*
+%{_bindir}/%{name}
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/%{name}
+%{_datadir}/mime/packages/%{name}.xml
+%{_datadir}/mimelnk/application/x-openbox-theme.desktop
+%{_datadir}/pixmaps/%{name}.png
