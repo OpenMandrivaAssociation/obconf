@@ -1,7 +1,7 @@
 Summary:	Openbox preferences manager
 Name:		obconf
 Version:	2.0.3
-Release:	%mkrel 6
+Release:	%mkrel 7
 Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
 License:	GPLv2+
 Group:		Graphical desktop/Other
