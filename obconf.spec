@@ -1,10 +1,8 @@
 Summary:	Openbox preferences manager
 Name:		obconf
 Version:	2.0.3
-Release:	%mkrel 8
+Release:	%mkrel 9
 Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
-Source1:	ru.po
-Patch0:		obconf-2.0.3-desktop.patch
 License:	GPLv2+
 Group:		Graphical desktop/Other
 Url:		http://openbox.org/wiki/Obconf
@@ -18,8 +16,6 @@ ObConf is a graphical configuration tool for the Openbox window manager.
 
 %prep
 %setup -q
-%patch0 -p0 -b .desktop
-cp %SOURCE1 ./po
 
 %build
 %configure2_5x
