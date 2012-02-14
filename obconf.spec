@@ -1,13 +1,15 @@
 Summary:	Openbox preferences manager
 Name:		obconf
 Version:	2.0.3
-Release:	%mkrel 9
-Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
+Release:	10
 License:	GPLv2+
 Group:		Graphical desktop/Other
 Url:		http://openbox.org/wiki/Obconf
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires:	startup-notification-devel, openbox-devel, gtk+2-devel, libglade2.0-devel 
+Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
+BuildRequires:	startup-notification-devel
+BuildRequires:	pkgconfig(obt-3.5)
+BuildRequires:	pkgconfig(gtk+-2.0)
+BuildRequires:	pkgconfig(libglade2.0)
 BuildRequires:	desktop-file-utils
 Requires:	openbox
 
@@ -26,16 +28,14 @@ rm -rf %{buildroot}
 %makeinstall
 
 # fix .desktop file
-desktop-file-install --remove-key="Encoding" \
-		--dir %{buildroot}%{_datadir}/applications %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-install \
+	--remove-key="Encoding" \
+	--dir %{buildroot}%{_datadir}/applications \
+	%{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %find_lang %{name}
 
-%clean
-rm -rf %{buildroot}
-
 %files -f %{name}.lang
-%defattr(-,root,root)
 %doc AUTHORS README COPYING TODO
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
