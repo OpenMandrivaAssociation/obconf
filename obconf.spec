@@ -27,6 +27,7 @@ ObConf is a graphical configuration tool for the Openbox window manager.
 %apply_patches
 
 %build
+autoreconf -fi
 %configure2_5x
 %make
 
