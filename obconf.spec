@@ -9,7 +9,7 @@ Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
 BuildRequires:	startup-notification-devel
 BuildRequires:	pkgconfig(obt-3.5)
 BuildRequires:	pkgconfig(gtk+-2.0)
-BuildRequires:	pkgconfig(libglade2.0)
+BuildRequires:	pkgconfig(libglade-2.0)
 BuildRequires:	desktop-file-utils
 Requires:	openbox
 
