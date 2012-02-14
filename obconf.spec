@@ -12,11 +12,12 @@ Patch2:		obconf-2.0.3-preview_update-missing-argument.patch
 Patch3:		obconf-2.0.3-load-rc.patch
 Patch4:		obconf-2.0.3-link.patch
 
-BuildRequires:	startup-notification-devel
-BuildRequires:	pkgconfig(obt-3.5)
-BuildRequires:	pkgconfig(gtk+-2.0)
-BuildRequires:	pkgconfig(libglade-2.0)
 BuildRequires:	desktop-file-utils
+BuildRequires:	gettext-devel
+BuildRequires:	pkgconfig(gtk+-2.0)
+BuildRequires:	pkgconfig(libstartup-notification-1.0)
+BuildRequires:	pkgconfig(libglade-2.0)
+BuildRequires:	pkgconfig(obt-3.5)
 Requires:	openbox
 
 %description
