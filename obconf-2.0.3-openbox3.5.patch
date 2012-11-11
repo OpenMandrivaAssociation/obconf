@@ -1,0 +1,354 @@
+From: Dana Jansens <danakj@orodu.net>
+Date: Mon, 21 Dec 2009 18:01:55 +0000 (-0500)
+Subject: Use the openbox 3.5 libs
+X-Git-Url: http://git.openbox.org/?p=dana%2Fobconf.git;a=commitdiff_plain;h=42b0ea6c275835bee09e83a2e83dfb934825aa8a
+
+Use the openbox 3.5 libs
+---
+
+diff --git a/configure.ac b/configure.ac
+index bae2dfb..f9b0775 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1,5 +1,5 @@
+ AC_PREREQ([2.54])
+-AC_INIT([obconf], [2.0.3], [http://bugzilla.icculus.org])
++AC_INIT([obconf], [2.0.4], [http://bugzilla.icculus.org])
+ AM_INIT_AUTOMAKE
+ AC_CONFIG_SRCDIR([src/main.c])
+ 
+@@ -20,7 +20,7 @@ ALL_LINGUAS=""
+ AM_GNU_GETTEXT_VERSION(0.15)
+ AM_GNU_GETTEXT([external])
+ 
+-PKG_CHECK_MODULES(OPENBOX, [obrender-3.0 >= 3.4.2 obparser-3.0 >= 3.4.2])
++PKG_CHECK_MODULES(OPENBOX, [obrender-3.5 obt-3.5])
+ AC_SUBST(OPENBOX_CFLAGS)
+ AC_SUBST(OPENBOX_LIBS)
+ 
+diff --git a/src/desktops.c b/src/desktops.c
+index d7e9811..f1f0021 100644
+--- a/src/desktops.c
++++ b/src/desktops.c
+@@ -156,7 +156,7 @@ static void desktops_read_names()
+         gchar *name;
+ 
+         if (!xmlStrcmp(n->name, (const xmlChar*)"name")) {
+-            name = parse_string(doc, n);
++            name = obt_parse_node_string(n);
+ 
+             desktop_names = g_list_append(desktop_names, name);
+ 
+diff --git a/src/main.c b/src/main.c
+index 7083730..875b783 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -42,6 +42,8 @@ xmlDocPtr doc;
+ xmlNodePtr root;
+ RrInstance *rrinst;
+ gchar *obc_config_file = NULL;
++ObtPaths *paths;
++ObtParseInst *parse_i;
+ 
+ static gchar *obc_theme_install = NULL;
+ static gchar *obc_theme_archive = NULL;
+@@ -214,7 +216,8 @@ int main(int argc, char **argv)
+         exit_with_error = TRUE;
+     }
+ 
+-    parse_paths_startup();
++    paths = obt_paths_new();
++    parse_i = obt_parse_instance_new();
+     rrinst = RrInstanceNew(GDK_DISPLAY(), gdk_x11_get_default_screen());
+ 
+     if (!obc_config_file) {
+@@ -230,10 +233,19 @@ int main(int argc, char **argv)
+     }
+ 
+     xmlIndentTreeOutput = 1;
+-    if (!parse_load_rc(obc_config_file, &doc, &root)) {
++    if (!obt_parse_load_config_file(parse_i,
++                                    "openbox",
++                                    (obc_config_file ?
++                                     obc_config_file : "rc.xml"),
++                                    "openbox_config"))
++    {
+         obconf_error(_("Failed to load an rc.xml. You have probably failed to install Openbox properly."), TRUE);
+         exit_with_error = TRUE;
+     }
++    else {
++        doc = obt_parse_doc(parse_i);
++        root = obt_parse_root(parse_i);
++    }
+ 
+     /* look for parsing errors */
+     {
+@@ -290,7 +302,8 @@ int main(int argc, char **argv)
+     }
+ 
+     RrInstanceFree(rrinst);
+-    parse_paths_shutdown();
++    obt_parse_instance_unref(parse_i);
++    obt_paths_unref(paths);
+ 
+     xmlFreeDoc(doc);
+     return 0;
+diff --git a/src/main.h b/src/main.h
+index 7d6303c..2c06630 100644
+--- a/src/main.h
++++ b/src/main.h
+@@ -19,19 +19,20 @@
+ #ifndef obconf__main_h
+ #define obconf__main_h
+ 
+-#include <openbox/render.h>
+-#include <openbox/instance.h>
+-#include <openbox/parse.h>
++#include <obrender/render.h>
++#include <obrender/instance.h>
++#include <obt/parse.h>
++#include <obt/paths.h>
+ 
+ #include <gtk/gtk.h>
+ #include <glade/glade-xml.h>
+ 
+ extern GladeXML *glade;
+-extern xmlDocPtr doc;
+-extern xmlNodePtr root;
+ extern RrInstance *rrinst;
+ extern GtkWidget *mainwin;
+ extern gchar *obc_config_file;
++extern ObtPaths *paths;
++extern ObtParseInst *parse_i;
+ 
+ #define get_widget(s) glade_xml_get_widget(glade, s)
+ 
+diff --git a/src/mouse.c b/src/mouse.c
+index 68d9c55..831e2e5 100644
+--- a/src/mouse.c
++++ b/src/mouse.c
+@@ -19,7 +19,7 @@
+ #include "main.h"
+ #include "tree.h"
+ #include "gettext.h"
+-#include <openbox/parse.h>
++#include <obt/parse.h>
+ 
+ static gboolean   mapping = FALSE;
+ static xmlNodePtr saved_custom = NULL;
+@@ -206,9 +206,9 @@ static gint read_doubleclick_action()
+ 
+     while (n) {
+         if (!xmlStrcmp(n->name, (const xmlChar*)"action")) {
+-            if (parse_attr_contains("ToggleMaximizeFull", n, "name"))
++            if (obt_parse_attr_contains(n, "name", "ToggleMaximizeFull"))
+                 ++max;
+-            else if (parse_attr_contains("ToggleShade", n, "name"))
++            else if (obt_parse_attr_contains(n, "name", "ToggleShade"))
+                 ++shade;
+             else
+                 ++other;
+diff --git a/src/preview.c b/src/preview.c
+index 7e463a8..a82cf15 100644
+--- a/src/preview.c
++++ b/src/preview.c
+@@ -23,7 +23,7 @@
+ 
+ #include <string.h>
+ 
+-#include <openbox/theme.h>
++#include <obrender/theme.h>
+ 
+ #define PADDING 2 /* openbox does it :/ */
+ 
+@@ -491,7 +491,8 @@ GdkPixbuf *preview_theme(const gchar *name, const gchar *titlelayout,
+                          RrFont *inactive_window_font,
+                          RrFont *menu_title_font,
+                          RrFont *menu_item_font,
+-                         RrFont *osd_font)
++                         RrFont *osd_active_font,
++                         RrFont *osd_inactive_font)
+ {
+ 
+     GdkPixbuf *preview;
+@@ -505,7 +506,8 @@ GdkPixbuf *preview_theme(const gchar *name, const gchar *titlelayout,
+ 
+     RrTheme *theme = RrThemeNew(rrinst, name, FALSE,
+                                 active_window_font, inactive_window_font,
+-                                menu_title_font, menu_item_font, osd_font);
++                                menu_title_font, menu_item_font,
++                                osd_active_font, osd_inactive_font);
+     if (!theme)
+         return NULL;
+ 
+diff --git a/src/preview.h b/src/preview.h
+index ff43766..772984b 100644
+--- a/src/preview.h
++++ b/src/preview.h
+@@ -21,7 +21,7 @@
+ 
+ #include <glib.h>
+ 
+-#include <openbox/font.h>
++#include <obrender/font.h>
+ #include <gdk/gdkpixbuf.h>
+ 
+ GdkPixbuf *preview_theme(const gchar *name, const gchar *titlelayout,
+@@ -29,6 +29,7 @@ GdkPixbuf *preview_theme(const gchar *name, const gchar *titlelayout,
+                          RrFont *inactive_window_font,
+                          RrFont *menu_title_font,
+                          RrFont *menu_item_font,
+-                         RrFont *osd_font);
++                         RrFont *osd_active_font,
++                         RrFont *osd_inactive_font);
+ 
+ #endif
+diff --git a/src/preview_update.h b/src/preview_update.h
+index 1fe9674..5163174 100644
+--- a/src/preview_update.h
++++ b/src/preview_update.h
+@@ -1,7 +1,7 @@
+ #ifndef obconf__preview_update_h
+ #define obconf__preview_update_h
+ 
+-#include <openbox/render.h>
++#include <obrender/render.h>
+ #include <gtk/gtk.h>
+ 
+ void preview_update_all();
+diff --git a/src/theme.c b/src/theme.c
+index 093dc21..70206f9 100644
+--- a/src/theme.c
++++ b/src/theme.c
+@@ -193,7 +193,7 @@ void theme_load_all()
+ 
+     {
+         GSList *it;
+-        for (it = parse_xdg_data_dir_paths(); it; it = g_slist_next(it)) {
++        for (it = obt_paths_data_dirs(paths); it; it = g_slist_next(it)) {
+             p = g_build_filename(it->data, "themes", NULL);
+             add_theme_dir(p);
+             g_free(p);
+diff --git a/src/tree.c b/src/tree.c
+index 2c0f2dc..2b39840 100644
+--- a/src/tree.c
++++ b/src/tree.c
+@@ -19,7 +19,7 @@
+ #include "tree.h"
+ #include "main.h"
+ 
+-#include <openbox/parse.h>
++#include <obt/parse.h>
+ #include <gdk/gdkx.h>
+ 
+ xmlNodePtr tree_get_node(const gchar *path, const gchar *def)
+@@ -28,7 +28,7 @@ xmlNodePtr tree_get_node(const gchar *path, const gchar *def)
+     gchar **nodes;
+     gchar **it, **next;
+ 
+-    n = root;
++    n = obt_parse_root(parse_i);
+ 
+     nodes = g_strsplit(path, "/", 0);
+     for (it = nodes; *it; it = next) {
+@@ -39,19 +39,19 @@ xmlNodePtr tree_get_node(const gchar *path, const gchar *def)
+         next = it + 1;
+ 
+         /* match attributes */
+-        c = parse_find_node(attrs[0], n->children);
++        c = obt_parse_find_node(n->children, attrs[0]);
+         while (c && !ok) {
+             gint i;
+ 
+             ok = TRUE;
+             for (i = 1; attrs[i]; ++i) {
+                 gchar **eq = g_strsplit(attrs[i], "=", 2);
+-                if (eq[1] && !parse_attr_contains(eq[1], c, eq[0]))
++                if (eq[1] && !obt_parse_attr_contains(c, eq[0], eq[1]))
+                     ok = FALSE;
+                 g_strfreev(eq);
+             }
+             if (!ok)
+-                c = parse_find_node(attrs[0], c->next);
++                c = obt_parse_find_node(c->next, attrs[0]);
+         }
+ 
+         if (!c) {
+@@ -76,6 +76,15 @@ xmlNodePtr tree_get_node(const gchar *path, const gchar *def)
+     return n;
+ }
+ 
++void tree_delete_node(const gchar *path)
++{
++    xmlNodePtr n;
++
++    n = tree_get_node(path, NULL);
++    xmlUnlinkNode(n);
++    xmlFreeNode(n);
++}
++
+ void tree_apply()
+ {
+     gchar *p, *d;
+@@ -84,15 +93,14 @@ void tree_apply()
+     if (obc_config_file)
+         p = g_strdup(obc_config_file);
+     else
+-        p = g_build_filename(parse_xdg_config_home_path(), "openbox",
++        p = g_build_filename(obt_paths_config_home(paths), "openbox",
+                              "rc.xml", NULL);
+ 
+     d = g_path_get_dirname(p);
+-    parse_mkdir_path(d, 0700);
++    obt_paths_mkdir_path(d, 0700);
+     g_free(d);
+ 
+-    err = xmlSaveFormatFile(p, doc, 1) == -1;
+-    if (err) {
++    if (!obt_parse_save_file(parse_i, p, TRUE)) {
+         gchar *s;
+         s = g_strdup_printf("An error occured while saving the "
+                             "config file '%s'", p);
+@@ -158,7 +166,7 @@ gchar* tree_get_string(const gchar *node, const gchar *def)
+     xmlNodePtr n;
+ 
+     n = tree_get_node(node, def);
+-    return parse_string(doc, n);
++    return obt_parse_node_string(n);
+ }
+ 
+ gint tree_get_int(const gchar *node, gint def)
+@@ -169,7 +177,7 @@ gint tree_get_int(const gchar *node, gint def)
+     d = g_strdup_printf("%d", def);
+     n = tree_get_node(node, d);
+     g_free(d);
+-    return parse_int(doc, n);
++    return obt_parse_node_int(n);
+ }
+ 
+ gboolean tree_get_bool(const gchar *node, gboolean def)
+@@ -177,5 +185,5 @@ gboolean tree_get_bool(const gchar *node, gboolean def)
+     xmlNodePtr n;
+ 
+     n = tree_get_node(node, (def ? "yes" : "no"));
+-    return parse_bool(doc, n);
++    return obt_parse_node_bool(n);
+ }
+diff --git a/src/tree.h b/src/tree.h
+index 39c96b3..62a20c8 100644
+--- a/src/tree.h
++++ b/src/tree.h
+@@ -19,10 +19,12 @@
+ #ifndef obconf__tree_h
+ #define obconf__tree_h
+ 
+-#include "openbox/parse.h"
++#include <obt/parse.h>
+ 
+ xmlNodePtr tree_get_node(const gchar *path, const gchar *def);
+ 
++void tree_delete_node(const gchar *path);
++
+ gchar* tree_get_string(const gchar *node, const gchar *def);
+ gint tree_get_int(const gchar *node, gint def);
+ gboolean tree_get_bool(const gchar *node, gboolean def);

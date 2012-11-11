@@ -1,0 +1,18 @@
+--- ./src/preview_update.c.orig	2011-09-05 11:08:00.903241955 +0300
++++ ./src/preview_update.c	2011-09-05 11:08:50.614306039 +0300
+@@ -1,4 +1,6 @@
+ #include "preview_update.h"
++/* This is needed for the declaration of preview_theme */
++#include "preview.h"
+ #include "main.h"
+ 
+ static gboolean restart_theme_preview_update = TRUE;
+@@ -123,7 +125,7 @@
+     gtk_list_store_set(GTK_LIST_STORE(ls), &iter, 1,
+                        preview_theme(name, title_layout, active_window_font,
+                                      inactive_window_font, menu_title_font,
+-                                     menu_item_font, osd_font),
++                                     menu_item_font, osd_font, osd_font),
+                        -1);
+ 
+     return TRUE;
