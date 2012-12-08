@@ -1,5 +1,5 @@
---- ./src/preview_update.c.orig	2011-09-05 11:08:00.903241955 +0300
-+++ ./src/preview_update.c	2011-09-05 11:08:50.614306039 +0300
+--- src/preview_update.c.orig	2011-09-05 11:08:00.903241955 +0300
++++ src/preview_update.c	2011-09-05 11:08:50.614306039 +0300
 @@ -1,4 +1,6 @@
  #include "preview_update.h"
 +/* This is needed for the declaration of preview_theme */
