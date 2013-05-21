@@ -1,7 +1,7 @@
 Summary:	Openbox preferences manager
 Name:		obconf
 Version:	2.0.3
-Release:	%mkrel 10
+Release:	11
 Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
 
 Patch0:		obconf-2.0.3-openbox3.5.patch
@@ -12,7 +12,6 @@ Patch4:		obconf-2.0.3-link.patch
 License:	GPLv2+
 Group:		Graphical desktop/Other
 Url:		http://openbox.org/wiki/Obconf
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires:	autoconf automake libtool gettext-devel
 BuildRequires:	startup-notification-devel, openbox-devel, pkgconfig(gtk+-2.0), libglade2.0-devel 
 BuildRequires:	desktop-file-utils
