@@ -14,7 +14,7 @@ Group:		Graphical desktop/Other
 Url:		http://openbox.org/wiki/Obconf
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires:	autoconf automake libtool gettext-devel
-BuildRequires:	startup-notification-devel, openbox-devel, gtk+2-devel, libglade2.0-devel 
+BuildRequires:	startup-notification-devel, openbox-devel, pkgconfig(gtk+-2.0), libglade2.0-devel 
 BuildRequires:	desktop-file-utils
 Requires:	openbox
 
