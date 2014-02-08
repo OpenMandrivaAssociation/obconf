@@ -1,7 +1,7 @@
 Summary:	Openbox preferences manager
 Name:		obconf
 Version:	2.0.3
-Release:	11
+Release:	12
 Source0:	http://openbox.org/dist/obconf/%name-%version.tar.gz
 
 Patch0:		obconf-2.0.3-openbox3.5.patch
