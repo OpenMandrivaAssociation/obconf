@@ -1,7 +1,7 @@
 Summary:	Openbox preferences manager
 Name:		obconf
 Version:	2.0.4
-Release:	6
+Release:	7
 License:	GPLv2+
 Group:		Graphical desktop/Other
 Url:		http://openbox.org/wiki/Obconf
