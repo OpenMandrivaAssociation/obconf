@@ -1,7 +1,7 @@
 Summary:	Openbox preferences manager
 Name:		obconf
 Version:	2.0.4
-Release:	11
+Release:	12
 License:	GPLv2+
 Group:		Graphical desktop/Other
 Url:		http://openbox.org/wiki/Obconf
@@ -37,18 +37,17 @@ ObConf is a graphical configuration tool for the Openbox window manager.
 #---------------------------------------------------------------------------
 
 %prep
-%setup -q
-%apply_patches
+%autosetup -p1
 
 %build
 #autoreconf -fiv
 %configure
-%make
+%make_build
 
 %install
-%makeinstall_std
+%makei_nstall
 
-# fix .desktop file
+# .desktop
 desktop-file-install \
 	--remove-key="Encoding" \
 	--dir %{buildroot}%{_datadir}/applications \
@@ -59,4 +58,3 @@ desktop-file-install \
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-
