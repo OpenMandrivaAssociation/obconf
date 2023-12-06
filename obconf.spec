@@ -23,6 +23,7 @@ Patch0:		obconf-c99.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
+BuildRequires:	locales-extra-charsets
 BuildRequires:	openbox-devel
 BuildRequires:	pkgconfig(gdk-pixbuf-2.0)
 BuildRequires:	pkgconfig(gtk+-3.0),
