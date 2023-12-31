@@ -1,6 +1,3 @@
-#FIMXE: workaround for clang 16
-%global optflags %{optflags} -Wno-incompatible-function-pointer-types
-
 # git snapshot
 %global snapshot 1
 %if 0%{?snapshot}
