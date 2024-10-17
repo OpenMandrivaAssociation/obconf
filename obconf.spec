@@ -12,7 +12,7 @@ Version:	2.0.4
 Release:	13
 License:	GPLv2+
 Group:		Graphical desktop/Other
-Url:		http://openbox.org/wiki/Obconf
+Url:		https://openbox.org/wiki/Obconf
 #Source0:	http://openbox.org/dist/obconf/%{name}-%{version}.tar.gz
 Source0:	https://github.com/danakj/obconf/archive/%{?snapshot:%{commit}}%{!?snapshot:%{version}}/%{name}-%{?snapshot:%{commit}}%{!?snapshot:%{version}}.tar.gz
 Patch0:		obconf-c99.patch
